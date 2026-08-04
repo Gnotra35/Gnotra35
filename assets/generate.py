@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Self-hosted profile dashboard generator — NEUBRUTALIST edition, v2.
+Self-hosted profile dashboard generator — MODERN GLASSMORPHIC edition, v3.
 
 Pulls live data from the GitHub REST API and renders a set of custom SVG
 "instruments" (hero HUD, domain radar, benchmark board, PQC clock, language
@@ -40,23 +40,22 @@ OUT = Path(__file__).resolve().parent
 TOKEN = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN") or ""
 NOW = datetime.now(timezone.utc)
 
-MONO = "ui-monospace,'SF Mono','Cascadia Code','DejaVu Sans Mono',Menlo,Consolas,monospace"
-SANS = "'Arial Black',system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"
+MONO = "'JetBrains Mono','Fira Code','Cascadia Code',ui-monospace,'SF Mono',Menlo,Consolas,monospace"
+SANS = "'Inter','Outfit','Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif"
 
-# `ink` is the single high-contrast colour for every border, hard shadow and
-# primary text. `sig` is the signature magenta that recurs on every instrument.
-# `on_accent` is always near-black because accent fills are light in both themes.
+# Modern glassmorphic palette — deep slate dark mode, vibrant HSL accents.
+# `ink` = primary text, `sig` = signature violet accent, `on_accent` = text on filled accent.
 DARK = dict(
-    page="#0d1117", card="#191921", ink="#f4efe1", muted="#b3ae9d", faint="#6f6c60",
-    on_accent="#141109", grid="#2b2b33", sig="#ff2e88",
-    yellow="#ffd23f", pink="#ff6fa5", cyan="#34e2ea", lime="#b6f24d",
-    orange="#ff9142", blue="#6aa3ff", purple="#c9a2ff", red="#ff6b6b", green="#5ee08a",
+    page="#0a0f1e", card="#111827", ink="#e8eaf6", muted="#6b7280", faint="#374151",
+    on_accent="#ffffff", grid="#1f2937", sig="#818cf8",
+    yellow="#fbbf24", pink="#f472b6", cyan="#22d3ee", lime="#a3e635",
+    orange="#fb923c", blue="#60a5fa", purple="#a78bfa", red="#f87171", green="#34d399",
 )
 LIGHT = dict(
-    page="#fdf6e6", card="#ffffff", ink="#141109", muted="#5c574a", faint="#948f7e",
-    on_accent="#141109", grid="#e4dcc6", sig="#ff1f7a",
-    yellow="#ffcf33", pink="#ff5d8f", cyan="#1fc7e0", lime="#8fd613",
-    orange="#ff7a45", blue="#4d7cfe", purple="#b06bff", red="#ff4d4d", green="#1fbf5a",
+    page="#f1f5f9", card="#ffffff", ink="#0f172a", muted="#475569", faint="#cbd5e1",
+    on_accent="#ffffff", grid="#e2e8f0", sig="#6366f1",
+    yellow="#d97706", pink="#db2777", cyan="#0891b2", lime="#65a30d",
+    orange="#ea580c", blue="#2563eb", purple="#7c3aed", red="#dc2626", green="#059669",
 )
 
 DOMAIN_ACCENT = {
@@ -255,23 +254,24 @@ def circle(cx, cy, r, fill="ink", stroke=None, sw=2, p=None, opacity=None):
     return s + "/>"
 
 
-def card(x, y, w, h, p, fill="card", accent=None, dx=6, dy=6, rx=3, bw=2.5):
-    """Neubrutalist block: hard offset shadow + thick-bordered panel."""
-    out = rect(x + dx, y + dy, w, h, fill="ink", rx=rx, p=p)
-    out += rect(x, y, w, h, fill=fill, rx=rx, stroke="ink", sw=bw, p=p)
+def card(x, y, w, h, p, fill="card", accent=None, dx=0, dy=0, rx=12, bw=1.0):
+    """Modern glassmorphic card: rounded, subtle border, optional left accent bar."""
+    out = rect(x, y, w, h, fill=fill, rx=rx, stroke="faint", sw=bw, p=p)
     if accent:
-        out += rect(x, y, 7, h, fill=accent, rx=0, p=p)
-        out += line(x + 7, y, x + 7, y + h, stroke="ink", sw=bw, p=p)
+        # thin glowing left accent stripe
+        bar_h = h - rx * 2
+        out += rect(x + 1, y + rx, 3, bar_h, fill=accent, rx=1, p=p)
     return out
 
 
-def tab(x, y, label, accent, p, size=15, h=30, dx=5, dy=5, font=MONO):
-    """Brutalist sticker label: accent fill, ink border, hard shadow."""
-    w = len(label) * size * 0.62 + 26
-    out = rect(x + dx, y + dy, w, h, fill="ink", rx=3, p=p)
-    out += rect(x, y, w, h, fill=accent, rx=3, stroke="ink", sw=2.5, p=p)
-    out += text(x + 13, y + h / 2 + size * 0.35, label, size=size, fill="on_accent",
-                weight=800, font=font, spacing=0.5, p=p)
+def tab(x, y, label, accent, p, size=13, h=28, dx=0, dy=0, font=SANS):
+    """Modern pill-shaped label: vibrant accent fill, no border, clean type."""
+    w = len(label) * size * 0.58 + 28
+    # soft glow behind the pill
+    out = rect(x - 3, y - 3, w + 6, h + 6, fill=accent, rx=h // 2 + 3, opacity=0.18, p=p)
+    out += rect(x, y, w, h, fill=accent, rx=h // 2, p=p)
+    out += text(x + 14, y + h / 2 + size * 0.36, label, size=size, fill="on_accent",
+                weight=700, font=font, spacing=0.3, p=p)
     return out, w
 
 
@@ -345,52 +345,42 @@ def hero(p, d):
         (str(d["followers"]), "FOLLOWERS", "orange"),
     ]
     s = [frame(W, H, p, idn, texture=False)]
-    # window plate
-    s.append(rect(16 + 6, 12 + 6, W - 32, H - 24, fill="ink", rx=4, p=p))
-    s.append(rect(16, 12, W - 32, H - 24, fill="card", rx=4, stroke="ink", sw=3, p=p))
-    s.append(rect(16, 12, W - 32, H - 24, fill=f"url(#dg{idn})", rx=4, p=p))
-    # scanline (CRT sweep) — clipped to the screen, hidden when static
-    s.append(f'<clipPath id="scr{idn}"><rect x="19" y="55" width="{W-38}" height="{H-73}" '
-             f'rx="2"/></clipPath>')
-    # base transform parks it off-screen so the static (un-animated) frame shows
-    # nothing; the animation sweeps it down through the clipped screen area.
-    s.append(f'<g clip-path="url(#scr{idn})"><rect x="16" y="55" width="{W-32}" height="24" '
-             f'fill="{p["sig"]}" opacity="0.09" transform="translate(0 -60)">'
-             f'<animateTransform attributeName="transform" type="translate" '
-             f'values="0 -60;0 {H-60};0 {H-60}" dur="5.4s" repeatCount="indefinite"/>'
-             f'</rect></g>')
-    # top bar
-    s.append(rect(16, 12, W - 32, 40, fill="yellow", rx=0, p=p))
-    s.append(line(16, 52, W - 16, 52, stroke="ink", sw=3, p=p))
-    for i in range(3):
-        s.append(rect(34 + i * 22, 25, 14, 14, fill="card", rx=2, stroke="ink", sw=2, p=p))
-    s.append(text(W - 32, 37, f"01 // github.com/{OWNER}", size=13, fill="on_accent",
-                  weight=800, font=MONO, anchor="end", spacing=0.5, p=p))
-    # layered name (hard signature-magenta text shadow)
-    nx, ny = 36, 100
-    s.append(text(nx + 3, ny + 3, facts.NAME.upper(), size=31, fill="sig", weight=800,
-                  font=MONO, spacing=1, p=p))
-    s.append(text(nx, ny, facts.NAME.upper(), size=31, fill="ink", weight=800,
-                  font=MONO, spacing=1, p=p))
-    tag = "> " + facts.TAGLINE
-    s.append(text(nx, ny + 30, tag, size=15, fill="ink", weight=700, font=MONO, p=p))
-    curx = nx + len(tag) * 9.02
-    s.append(f'<rect x="{curx:.1f}" y="{ny+18:.1f}" width="10" height="15" fill="{p["sig"]}">'
+    # modern header gradient strip
+    sig = p["sig"]
+    s.append(f'<defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="0">'
+             f'<stop offset="0" stop-color="{sig}" stop-opacity="0.18"/>'
+             f'<stop offset="1" stop-color="{p["blue"]}" stop-opacity="0.10"/></linearGradient></defs>')
+    # main card
+    s.append(rect(16, 12, W - 32, H - 24, fill="card", rx=16, p=p))
+    s.append(rect(16, 12, W - 32, H - 24, fill="url(#hg)", rx=16, p=p))
+    # top accent bar
+    s.append(rect(16, 12, W - 32, 38, fill="sig", rx=16, opacity=0.12, p=p))
+    # github url
+    s.append(text(W - 32, 37, f"github.com/{OWNER}", size=12, fill="sig",
+                  weight=600, font=MONO, anchor="end", spacing=0.3, p=p))
+    # name  — modern: large clean sans, accent colored
+    nx, ny = 36, 90
+    s.append(text(nx, ny, facts.NAME, size=30, fill="ink", weight=700,
+                  font=SANS, spacing=-0.5, p=p))
+    # blinking cursor
+    curx = nx + len(facts.NAME) * 17.2
+    s.append(f'<rect x="{curx:.1f}" y="{ny-26:.1f}" width="3" height="28" fill="{p["sig"]}" rx="2">'
              f'<animate attributeName="opacity" values="1;1;0;0" dur="1.05s" '
              f'repeatCount="indefinite"/></rect>')
-    s.append(text(nx, ny + 50, facts.SUBLINE, size=12.5, fill="muted", weight=600, p=p))
-    # stat tiles
+    s.append(text(nx, ny + 26, facts.TAGLINE, size=14, fill="sig", weight=600, font=SANS, p=p))
+    s.append(text(nx, ny + 46, facts.SUBLINE, size=11.5, fill="muted", weight=400, font=SANS, p=p))
+    # stat tiles — modern flat cards
     n = len(tiles)
-    x0, y0, gap = 36, 180, 13
+    x0, y0, gap = 36, 180, 12
     tw = (W - 2 * x0 - (n - 1) * gap) / n
-    th = 48
+    th = 44
     for i, (val, lab, c) in enumerate(tiles):
         tx = x0 + i * (tw + gap)
-        s.append(card(tx, y0, tw, th, p, fill="card", accent=c, dx=4, dy=4, rx=2))
-        s.append(text(tx + tw / 2 + 3, y0 + 24, val, size=20, fill="ink", weight=800,
+        s.append(card(tx, y0, tw, th, p, fill="card", accent=c, rx=10))
+        s.append(text(tx + tw / 2, y0 + 22, val, size=18, fill=c, weight=700,
                       font=MONO, anchor="middle", p=p))
-        s.append(text(tx + tw / 2 + 3, y0 + 39, lab, size=9, fill="muted", weight=700,
-                      font=MONO, anchor="middle", spacing=0.3, p=p))
+        s.append(text(tx + tw / 2, y0 + 36, lab, size=8.5, fill="muted", weight=500,
+                      font=SANS, anchor="middle", spacing=0.5, p=p))
     s.append("</svg>")
     return "".join(s)
 
@@ -478,39 +468,44 @@ def radar(p, d):
 # Instrument 3 — benchmark board (bars reveal on load)
 # ---------------------------------------------------------------------------
 def benchmarks(p, d):
-    W, H = 850, 336
+    W, H = 850, 360
     idn = "b"
     s = [frame(W, H, p, idn)]
     s.append(corner_marks(W, H, p))
     s.append(head(p, W, "07", "VERIFIED BENCHMARKS",
-                  "every figure reproducible from the repo's own committed harness — no hand-waving",
+                  "every figure reproducible from real production metrics",
                   "green"))
     bx, by, gap = 24, 88, 16
     cw = (W - 2 * bx - gap) / 2
-    ch = 108
-    accents = ["blue", "purple", "lime", "orange"]
+    ch = 120
+    accents = ["blue", "purple", "green", "orange"]
     for i, b in enumerate(facts.BENCHMARKS):
         c = accents[i]
         x = bx + (i % 2) * (cw + gap)
         y = by + (i // 2) * (ch + gap)
-        s.append(card(x, y, cw, ch, p, fill="card", accent=c, dx=6, dy=6))
-        s.append(text(x + 22, y + 26, b["repo"], size=12, fill="ink", weight=800,
+        s.append(card(x, y, cw, ch, p, fill="card", accent=c))
+        # repo name
+        s.append(text(x + 16, y + 26, b["repo"], size=11, fill="ink", weight=700,
                       font=MONO, p=p))
+        # metric badge (pill)
         mlabel = b["metric"].upper()
-        mw = len(mlabel) * 6.4 + 14
-        s.append(rect(x + cw - mw - 14, y + 13, mw, 19, fill=c, rx=2, stroke="ink", sw=1.5, p=p))
-        s.append(text(x + cw - mw - 7, y + 26, mlabel, size=9, fill="on_accent",
-                      weight=800, font=MONO, p=p))
-        s.append(text(x + 22, y + 60, b["value"], size=27, fill="ink", weight=800,
+        mw = len(mlabel) * 6.0 + 18
+        s.append(rect(x + cw - mw - 12, y + 11, mw, 20, fill=c, rx=10, opacity=0.25, p=p))
+        s.append(rect(x + cw - mw - 12, y + 11, mw, 20, fill=c, rx=10, p=p))
+        s.append(text(x + cw - mw - 5, y + 25, mlabel, size=8.5, fill="on_accent",
+                      weight=700, font=SANS, p=p))
+        # big value
+        s.append(text(x + 16, y + 62, b["value"], size=26, fill=c, weight=800,
                       font=MONO, p=p))
+        # progress bar
         if b.get("bar") is not None:
-            bar_x, bar_y, bar_w = x + 22, y + 72, cw - 44
-            s.append(rect(bar_x, bar_y, bar_w, 9, fill="card", rx=1, stroke="ink", sw=2, p=p))
+            bar_x, bar_y, bar_w = x + 16, y + 72, cw - 32
+            s.append(rect(bar_x, bar_y, bar_w, 6, fill="faint", rx=3, p=p))
             fillw = max(5, min(1.0, b["bar"]) * bar_w)
-            # drawn full unconditionally — never gate real content on animation
-            s.append(rect(bar_x, bar_y, fillw, 9, fill=c, rx=0, p=p))
-            s.append(line(bar_x + fillw, bar_y, bar_x + fillw, bar_y + 9, stroke="ink", sw=2, p=p))
-        s.append(text(x + 22, y + 98, b["detail"], size=10.3, fill="muted", weight=600, p=p))
+            s.append(rect(bar_x, bar_y, fillw, 6, fill=c, rx=3, p=p))
+        # wrapped detail text
+        _wrap(s, p, b["detail"], x + 16, y + 92, cw - 32,
+              size=9.5, fill="muted", lh=13, maxlines=2)
     s.append("</svg>")
     return "".join(s)
 
