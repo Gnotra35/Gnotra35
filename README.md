@@ -1,23 +1,28 @@
 <!--
-  Profile README — Payal Gnotra
-  Full Stack Web Developer | Golang · React.js · Next.js · gRPC · NATS · Docker
+  Profile README — self-hosted live dashboard.
+  Every visual below is a custom SVG generated from live GitHub API data by
+  assets/generate.py and committed to this repo (assets/*.svg), refreshed daily
+  by .github/workflows/profile-assets.yml. Nothing here depends on a third-party
+  image host at view time. Every number is real and reproducible. Dark/light
+  variants are served via <picture>. Motion is SMIL (served verbatim by GitHub);
+  every animation is additive and degrades to a complete static frame.
 -->
 
 <div align="center">
 
-# 👩‍💻 Payal Gnotra
+<picture>
+  <source media="(prefers-color-scheme: dark)"  srcset="./assets/boot-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/boot-light.svg">
+  <img alt="Terminal boot log" src="./assets/boot-dark.svg" width="850">
+</picture>
 
-### Full Stack Web Developer
-
-**Golang · React.js · Next.js · gRPC · NATS JetStream · Docker · AWS**
-
-[![GitHub](https://img.shields.io/badge/GitHub-payal--35-181717?style=for-the-badge&logo=github)](https://github.com/payal-35)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Payal%20Gnotra-0A66C2?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/payal-gnotra-830433230)
-[![Email](https://img.shields.io/badge/Email-gnotrapayal421%40gmail.com-EA4335?style=for-the-badge&logo=gmail)](mailto:gnotrapayal421@gmail.com)
+<picture>
+  <source media="(prefers-color-scheme: dark)"  srcset="./assets/hero-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/hero-light.svg">
+  <img alt="Header for Payal Gnotra, Full Stack Developer" src="./assets/hero-dark.svg" width="850">
+</picture>
 
 </div>
-
----
 
 ## ▌ WHOAMI
 
@@ -31,47 +36,33 @@ Results-driven **Full Stack Developer** with **1 year of production experience**
 
 ---
 
-## ▌ TECHNICAL SKILLS
+## ▌ LIVE SYSTEM STATUS
 
-### 🖥️ Languages
-`Golang` · `TypeScript` · `JavaScript (ES6+)` · `HTML5` · `CSS3` · `Dart`
+<div align="center">
 
-### 🎨 Frontend & Mobile
-`Next.js` · `React.js` · `Tailwind CSS` · `React Router v7` · `TanStack Query` · `Redux` · `ElectronJS` · `Flutter`
+<picture>
+  <source media="(prefers-color-scheme: dark)"  srcset="./assets/status-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/status-light.svg">
+  <img alt="Live system-status board" src="./assets/status-dark.svg" width="850">
+</picture>
 
-### ⚙️ Backend & Distributed Systems
-`Gin` · `Echo` · `gRPC` · `NATS JetStream` · `GraphQL` · `WebSockets` · `REST APIs`
+</div>
 
-### ☁️ Infrastructure & DevOps
-`AWS (EC2, S3, Lambda)` · `Docker` · `Kong API Gateway` · `Git / GitHub` · `CI/CD`
-
-### 🗄️ Databases
-`PostgreSQL` · `Redis`
-
----
-
-## ▌ EXPERIENCE
-
-### 💼 Full Stack Developer — RNR Consulting Pvt. Ltd.
-**New Delhi, India · Apr 2025 – Present**
-
-- **Architected** a high-throughput microservices ecosystem using **Golang, gRPC, and NATS**, improving inter-service communication efficiency by **35%** through asynchronous event-driven patterns.
-- **Streamlined** frontend performance across **5+ modules** using **React.js and TanStack Query**, optimizing API orchestration and state management to significantly reduce data-fetching latency.
-- **Secured** and managed **100% of external service traffic** by deploying **Kong API Gateway** with JWT authentication, rate limiting, and custom plugin-based routing.
-- **Engineered** a real-time cross-platform synchronization layer between **Next.js and Flutter** using WebSockets, ensuring low-latency delivery for critical system notifications.
-
----
-
-### 🌐 Web Developer Intern — Scout and Guide Trust India
-**Dec 2024 – Feb 2025**
-
-- Developed **10+ responsive web interfaces** using React.js, HTML5, CSS3, and JavaScript, contributing reusable components to internal design systems and dashboards.
-- Integrated **5+ RESTful APIs** within the MERN stack, completing full-cycle feature delivery from API design and unit testing to frontend consumption and deployment.
-- Participated in daily code reviews, Git-based version control workflows, and agile sprint ceremonies — consistently delivering tasks on time within a **2-week sprint cycle**.
+> The board above is regenerated daily from the live GitHub API — CI dots, uptime bars, versions and "last commit" ages are real.
 
 ---
 
 ## ▌ PORTFOLIO MAP
+
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)"  srcset="./assets/domains-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/domains-light.svg">
+  <img alt="Radar chart mapping flagship repositories" src="./assets/domains-dark.svg" width="850">
+</picture>
+
+</div>
 
 ### ⚙️ Backend & Distributed Systems
 
@@ -103,24 +94,88 @@ Results-driven **Full Stack Developer** with **1 year of production experience**
 |------|-------|--------------|
 | **flutter-ui-kit** | Flutter · Dart | Reusable, performant Flutter components and responsive layouts for cross-platform mobile applications. |
 
----
-
-## ▌ EDUCATION
-
-| Degree | Institution | Period | Result |
-|--------|-------------|--------|--------|
-| **B.Tech — Computer Science & Engineering** | Eternal University, Sirmaur, Himachal Pradesh | 2021 – 2025 | CGPA: **8.15** |
-| **Senior Secondary (Class XII) — Science** | Meritorious School, Gurdaspur, Punjab | 2019 – 2021 | **90.2%** |
 
 ---
 
-## ▌ ACHIEVEMENTS & AWARDS
+## ▌ ACTIVITY PULSE
 
-🏆 **Yukti Sangam Hackathon 2025** (RNR Consulting) — Collaborated in a cross-functional team to prototype a full-stack solution under tight time constraints.
+<div align="center">
 
-🎨 **Foundations of User Experience (UX) Design** — Google Certified in UX research, wireframing, prototyping, and design thinking.
+<picture>
+  <source media="(prefers-color-scheme: dark)"  srcset="./assets/pulse-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/pulse-light.svg">
+  <img alt="Heatmap of commits" src="./assets/pulse-dark.svg" width="850">
+</picture>
 
-🗄️ **SQL Basic & Intermediate** — HackerRank certified SQL proficiency.
+</div>
+
+## ▌ THE JOURNEY
+
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)"  srcset="./assets/timeline-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/timeline-light.svg">
+  <img alt="Multi-year timeline" src="./assets/timeline-dark.svg" width="850">
+</picture>
+
+</div>
+
+---
+
+## ▌ EXPERIENCE & ACHIEVEMENTS
+
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)"  srcset="./assets/research-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/research-light.svg">
+  <img alt="Experience and impact panel" src="./assets/research-dark.svg" width="850">
+</picture>
+
+</div>
+
+---
+
+## ▌ VERIFIED BENCHMARKS
+
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)"  srcset="./assets/benchmarks-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/benchmarks-light.svg">
+  <img alt="Four verified benchmarks" src="./assets/benchmarks-dark.svg" width="850">
+</picture>
+
+</div>
+
+---
+
+## ▌ ROADMAP & DEADLINES
+
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)"  srcset="./assets/pqc-clock-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/pqc-clock-light.svg">
+  <img alt="Roadmap goals and target deadlines" src="./assets/pqc-clock-dark.svg" width="850">
+</picture>
+
+</div>
+
+---
+
+## ▌ LANGUAGE MIX
+
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)"  srcset="./assets/langmix-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/langmix-light.svg">
+  <img alt="Treemap of codebase composition" src="./assets/langmix-dark.svg" width="850">
+</picture>
+
+</div>
 
 ---
 
@@ -128,17 +183,20 @@ Results-driven **Full Stack Developer** with **1 year of production experience**
 
 <div align="center">
 
-![GitHub Snake](https://raw.githubusercontent.com/payal-35/payal-35/output/github-contribution-grid-snake-dark.svg#gh-dark-mode-only)
-![GitHub Snake](https://raw.githubusercontent.com/payal-35/payal-35/output/github-contribution-grid-snake.svg#gh-light-mode-only)
+<picture>
+  <source media="(prefers-color-scheme: dark)"  srcset="https://raw.githubusercontent.com/payal-35/payal-35/output/github-contribution-grid-snake-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/payal-35/payal-35/output/github-contribution-grid-snake.svg">
+  <img alt="An animated snake that eats its way through my real GitHub contribution graph, regenerated from live contribution data every day" src="https://raw.githubusercontent.com/payal-35/payal-35/output/github-contribution-grid-snake-dark.svg">
+</picture>
 
 </div>
 
 ---
 
 <div align="center">
+<b>This whole page is a program.</b> 
+Custom SVG instruments, built from live GitHub data by <a href="./assets/generate.py"><code>assets/generate.py</code></a>, committed to this repo, and refreshed every day by a GitHub Action — plus the classic animated contribution snake, regenerated daily from real commit data by its own long-running <a href="./.github/workflows/main.yml">GitHub Action</a> and committed to this repo's <code>output</code> branch. No flaky Vercel-hosted widget services. No mocked numbers. Every figure is real and reproducible — down to the red build I haven't hidden.
 
-**Let's build something great together.**
-
-[![GitHub followers](https://img.shields.io/github/followers/payal-35?style=social)](https://github.com/payal-35)
+<sub>◆ self-hosted ◆ live-sourced ◆ dark/light aware ◆ animated ◆ zero third-party image hosts</sub>
 
 </div>
