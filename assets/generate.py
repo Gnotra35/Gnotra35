@@ -430,35 +430,34 @@ def radar(p, d):
         elif lx > cx + 20:
             anchor = "start"
         dy = -4 if ly < cy - 40 else 12
-        s.append(text(lx, ly + dy, SHORT_DOMAIN[dm], size=10.5, fill="ink", weight=800,
-                      anchor=anchor, font=MONO, p=p))
-        s.append(text(lx, ly + dy + 13, f"{counts[dm]} REPOS", size=10, fill=c, weight=800,
-                      anchor=anchor, font=MONO, p=p))
+        s.append(text(lx, ly + dy, SHORT_DOMAIN[dm], size=10.5, fill="ink", weight=700,
+                      anchor=anchor, font=SANS, p=p))
+        s.append(text(lx, ly + dy + 13, f"{counts[dm]} REPOS", size=9.5, fill=c, weight=700,
+                      anchor=anchor, font=SANS, p=p))
     dpts = " ".join(f"{pt(i, counts[dm] / mx)[0]:.1f},{pt(i, counts[dm] / mx)[1]:.1f}"
                     for i, dm in enumerate(doms))
     s.append(f'<polygon points="{dpts}" fill="{p["blue"]}" fill-opacity="0.22" '
-             f'stroke="{p["ink"]}" stroke-width="3" stroke-linejoin="round"/>')
+             f'stroke="{p["blue"]}" stroke-width="2" stroke-linejoin="round"/>')
     for i, dm in enumerate(doms):
         vx, vy = pt(i, counts[dm] / mx)
-        s.append(rect(vx - 5, vy - 5, 10, 10, fill=DOMAIN_ACCENT[dm], rx=1, stroke="ink",
-                      sw=2, p=p))
+        s.append(circle(vx, vy, 5.5, fill=DOMAIN_ACCENT[dm], p=p))
 
     ix, iy = 446, 100
-    s.append(line(430, 84, 430, H - 20, stroke="grid", sw=2, p=p))
+    s.append(line(430, 84, 430, H - 20, stroke="grid", sw=1.5, p=p))
     for dm in doms:
         c = DOMAIN_ACCENT[dm]
-        s.append(rect(ix, iy - 11, 14, 14, fill=c, rx=2, stroke="ink", sw=2, p=p))
-        s.append(text(ix + 22, iy, dm.upper(), size=11, fill="ink", weight=800,
-                      font=MONO, spacing=0.3, p=p))
+        s.append(rect(ix, iy - 11, 14, 14, fill=c, rx=7, p=p))
+        s.append(text(ix + 22, iy, dm.upper(), size=11, fill="ink", weight=700,
+                      font=SANS, spacing=0.3, p=p))
         for f in [f for f in facts.FLAGSHIPS if f["domain"] == dm]:
             iy += 18
             lc = facts.LANG_COLORS.get(f["lang"], p["muted"])
-            s.append(circle(ix + 8, iy - 4, 4, fill=lc, stroke="ink", sw=1.5, p=p))
+            s.append(circle(ix + 8, iy - 4, 3.5, fill=lc, p=p))
             nm = f["name"] + ("  [private]" if f.get("private") else "")
             s.append(text(ix + 22, iy, nm, size=11.5, fill="ink", weight=600, font=MONO, p=p))
             if f.get("tag"):
                 tagx = ix + 22 + len(nm) * 7.05 + 8
-                s.append(text(tagx, iy, f["tag"], size=10, fill=c, weight=800, font=MONO, p=p))
+                s.append(text(tagx, iy, f["tag"], size=10, fill=c, weight=700, font=MONO, p=p))
         iy += 22
     s.append("</svg>")
     return "".join(s)
@@ -533,16 +532,16 @@ def pqc_clock(p, d):
             "yellow" if days <= 1500 else "blue"
 
     tx0, tx1, ty = 32, W - 32, 104
-    s.append(line(tx0, ty, tx1, ty, stroke="ink", sw=3, p=p))
-    s.append(rect(tx0 - 4, ty - 4, 8, 8, fill="ink", rx=1, p=p))
+    s.append(line(tx0, ty, tx1, ty, stroke="grid", sw=1.5, p=p))
+    s.append(circle(tx0, ty, 3, fill="ink", p=p))
     s.append(text(tx0, ty + 20, "TODAY " + today.strftime("%b %Y"), size=9.5, fill="muted",
-                  weight=700, font=MONO, p=p))
+                  weight=600, font=SANS, p=p))
     nearest = min(range(len(dls)), key=lambda i: dls[i]["days"])
     for i, dl in enumerate(dls):
         fx = tx0 + (dl["days"] / horizon) * (tx1 - tx0)
         c = urg(dl["days"])
-        s.append(line(fx, ty - 11, fx, ty + 11, stroke="ink", sw=3, p=p))
-        mk = rect(fx - 6, ty - 6, 12, 12, fill=c, rx=1, stroke="ink", sw=2, p=p)
+        s.append(line(fx, ty - 8, fx, ty + 8, stroke="grid", sw=1.5, p=p))
+        mk = circle(fx, ty, 5.5, fill=c, p=p)
         if i == nearest:  # pulse the most urgent marker
             mk = (f'<g>{mk}<circle cx="{fx:.1f}" cy="{ty}" r="6" fill="none" '
                   f'stroke="{p[c]}" stroke-width="2"><animate attributeName="r" '
@@ -556,22 +555,20 @@ def pqc_clock(p, d):
     for i, dl in enumerate(dls):
         c = urg(dl["days"])
         x = cx0 + i * (cw + gap)
-        s.append(card(x, cy0, cw, ch, p, fill="card", dx=5, dy=5))
-        stripe = rect(x, cy0, cw, 8, fill=c, rx=0, p=p)
-        if i == nearest:  # pulse the nearest card's top stripe
-            stripe = (f'<g>{stripe}<rect x="{x:.1f}" y="{cy0}" width="{cw:.1f}" height="8" '
-                      f'fill="{p[c]}"><animate attributeName="opacity" values="1;0.35;1" '
+        s.append(card(x, cy0, cw, ch, p, fill="card", accent=c, dx=5, dy=5))
+        if i == nearest:
+            stripe = (f'<g><rect x="{x + 1:.1f}" y="{cy0 + 12}" width="3" height="{ch - 24}" '
+                      f'fill="{p[c]}" rx="1"><animate attributeName="opacity" values="1;0.35;1" '
                       f'dur="1.4s" repeatCount="indefinite"/></rect></g>')
-        s.append(stripe)
-        s.append(line(x, cy0 + 8, x + cw, cy0 + 8, stroke="ink", sw=2.5, p=p))
-        s.append(text(x + 14, cy0 + 32, dl["dt"].strftime("%Y-%m-%d"), size=11, fill="muted",
-                      weight=700, font=MONO, p=p))
-        s.append(text(x + 14, cy0 + 66, f"{dl['days']:,}", size=30, fill="ink", weight=800,
-                      font=MONO, p=p))
-        s.append(text(x + 14, cy0 + 82, "DAYS LEFT", size=10, fill=c, weight=800, font=MONO,
+            s.append(stripe)
+        s.append(text(x + 16, cy0 + 26, dl["dt"].strftime("%Y-%m-%d"), size=10, fill="muted",
+                      weight=600, font=SANS, p=p))
+        s.append(text(x + 16, cy0 + 60, f"{dl['days']:,}", size=28, fill="ink", weight=800,
+                      font=SANS, p=p))
+        s.append(text(x + 16, cy0 + 76, "DAYS LEFT", size=9.5, fill=c, weight=700, font=SANS,
                       spacing=0.5, p=p))
-        s.append(text(x + 14, cy0 + 104, dl["label"], size=10.5, fill="ink", weight=800, p=p))
-        _wrap(s, p, dl["note"], x + 14, cy0 + 120, cw - 22, size=9, fill="muted",
+        s.append(text(x + 16, cy0 + 98, dl["label"], size=10.5, fill="ink", weight=700, font=SANS, p=p))
+        _wrap(s, p, dl["note"], x + 16, cy0 + 116, cw - 26, size=9, fill="muted",
               lh=11, maxlines=2)
     s.append("</svg>")
     return "".join(s)
@@ -671,29 +668,29 @@ def langmix(p, d):
     # tile fills first, then a unified ink border grid on top for clean shared edges
     for (lang, v), (rx, ry, rw, rh) in zip(items, rects):
         c = facts.LANG_COLORS.get(lang, p["muted"])
-        s.append(f'<rect x="{rx:.2f}" y="{ry:.2f}" width="{rw:.2f}" height="{rh:.2f}" fill="{c}"/>')
+        s.append(f'<rect x="{rx:.2f}" y="{ry:.2f}" width="{rw:.2f}" height="{rh:.2f}" fill="{c}" rx="8"/>')
     for (lang, v), (rx, ry, rw, rh) in zip(items, rects):
         c = facts.LANG_COLORS.get(lang, p["muted"])
         tcol = "#141109" if _lum(c) > 140 else "#f4efe1"
         pct = v / total * 100
         s.append(f'<rect x="{rx:.2f}" y="{ry:.2f}" width="{rw:.2f}" height="{rh:.2f}" '
-                 f'fill="none" stroke="{p["ink"]}" stroke-width="3"/>')
+                 f'fill="none" stroke="{p["card"]}" stroke-width="4" rx="8"/>')
         kb = f"{v/1000:.0f} KB" if v >= 1000 else f"{v} B"
         if rw > 92 and rh > 52:
-            s.append(text(rx + 12, ry + 26, lang, size=16, fill=tcol, weight=800, font=MONO, p=p))
-            s.append(text(rx + 12, ry + 45, f"{pct:.1f}%", size=13, fill=tcol, weight=800,
-                          font=MONO, opacity=0.92, p=p))
+            s.append(text(rx + 12, ry + 26, lang, size=16, fill=tcol, weight=800, font=SANS, p=p))
+            s.append(text(rx + 12, ry + 45, f"{pct:.1f}%", size=13, fill=tcol, weight=700,
+                          font=SANS, opacity=0.92, p=p))
             if rh > 74:
                 s.append(text(rx + 12, ry + rh - 12, kb, size=10.5, fill=tcol, weight=600,
-                              font=MONO, opacity=0.8, p=p))
+                              font=SANS, opacity=0.8, p=p))
         elif rw > 46 and rh > 30:
-            s.append(text(rx + 8, ry + 19, lang, size=12, fill=tcol, weight=800, font=MONO, p=p))
-            s.append(text(rx + 8, ry + 34, f"{pct:.1f}%", size=11, fill=tcol, weight=700,
-                          font=MONO, opacity=0.9, p=p))
+            s.append(text(rx + 8, ry + 19, lang, size=12, fill=tcol, weight=700, font=SANS, p=p))
+            s.append(text(rx + 8, ry + 34, f"{pct:.1f}%", size=11, fill=tcol, weight=600,
+                          font=SANS, opacity=0.9, p=p))
         else:
             s.append(text(rx + rw / 2, ry + rh / 2 + 4, f"{pct:.0f}%", size=11, fill=tcol,
-                          weight=800, font=MONO, anchor="middle", p=p))
-    s.append(rect(tx, ty, tw, th, fill="none", rx=2, stroke="ink", sw=3.5, p=p))
+                          weight=700, font=SANS, anchor="middle", p=p))
+    s.append(rect(tx, ty, tw, th, fill="none", rx=8, stroke="card", sw=4, p=p))
     s.append("</svg>")
     return "".join(s)
 
@@ -803,11 +800,11 @@ def status_board(p, d):
     cx = 24
     for val, lab, c in chips:
         label = f"{val} {lab}"
-        cw = len(label) * 7.3 + 30
-        s.append(rect(cx + 4, 82 + 4, cw, 24, fill="ink", rx=3, p=p))
-        s.append(rect(cx, 82, cw, 24, fill="card", rx=3, stroke="ink", sw=2, p=p))
-        s.append(circle(cx + 13, 94, 5, fill=c, stroke="ink", sw=1.5, p=p))
-        s.append(text(cx + 24, 98, label, size=11.5, fill="ink", weight=800, font=MONO, p=p))
+        cw = len(label) * 7.0 + 32
+        s.append(rect(cx, 82, cw, 24, fill=c, rx=12, opacity=0.15, p=p))
+        s.append(rect(cx, 82, cw, 24, fill="card", rx=12, p=p))
+        s.append(circle(cx + 14, 94, 5, fill=c, p=p))
+        s.append(text(cx + 26, 98, label, size=11, fill="ink", weight=700, font=SANS, p=p))
         cx += cw + 12
     y0 = 124
     for i, f in enumerate(pub):
@@ -816,25 +813,23 @@ def status_board(p, d):
         st = latest.get(name)
         sc = "green" if st == "success" else "red" if st == "failure" else "faint"
         if i % 2 == 0:
-            s.append(rect(20, y - 15, W - 40, 25, fill="ink", rx=3, opacity=0.04, p=p))
-        s.append(rect(28, y - 11, 13, 13, fill=sc, rx=2, stroke="ink", sw=1.5, p=p))
+            s.append(rect(20, y - 15, W - 40, 25, fill="faint", rx=6, opacity=0.1, p=p))
+        s.append(circle(34, y - 4, 6.5, fill=sc, p=p))
         lc = facts.LANG_COLORS.get(f["lang"], p["muted"])
-        s.append(circle(52, y - 4, 4, fill=lc, stroke="ink", sw=1.3, p=p))
-        s.append(text(64, y, name, size=12.5, fill="ink", weight=700, font=MONO, p=p))
+        s.append(circle(52, y - 4, 4, fill=lc, p=p))
+        s.append(text(64, y, name, size=12.5, fill="ink", weight=600, font=MONO, p=p))
         s.append(text(300, y, f["tag"] or "—", size=11, fill="sig" if f["tag"] else "faint",
-                      weight=800, font=MONO, p=p))
+                      weight=700, font=SANS, p=p))
         s.append(text(390, y, "updated " + rel_age(d["lastcommit"].get(name)), size=10.5,
-                      fill="muted", weight=600, font=MONO, p=p))
+                      fill="muted", weight=500, font=SANS, p=p))
         # uptime ticks (oldest -> newest), right aligned
         hist = d["ci_hist"].get(name, [])[-12:]
         tw, gap = 7, 3
         total_w = 12 * (tw + gap)
         bx = W - 30 - total_w
-        s.append(text(bx - 10, y, "CI", size=9.5, fill="faint", weight=700, font=MONO,
+        s.append(text(bx - 10, y, "CI", size=9.5, fill="faint", weight=700, font=SANS,
                       anchor="end", p=p))
-        # bare rects inside a shared-stroke group (stroke inherits) — saves the
-        # per-rect stroke/stroke-width bytes across ~144 ticks
-        s.append(f'<g stroke="{p["ink"]}" stroke-width="1">')
+        # bare rects (no stroke)
         for j in range(12):
             idx = j - (12 - len(hist))
             c = "grid"
@@ -842,8 +837,7 @@ def status_board(p, d):
                 v = hist[idx]
                 c = "green" if v == "success" else "red" if v == "failure" else "yellow"
             s.append(f'<rect x="{bx + j * (tw + gap):.1f}" y="{y-10:.1f}" width="{tw}" '
-                     f'height="13" rx="1" fill="{p[c]}"/>')
-        s.append('</g>')
+                     f'height="13" rx="2" fill="{p[c]}"/>')
     s.append("</svg>")
     return "".join(s)
 
@@ -883,11 +877,11 @@ def pulse(p, d):
     for val, lab, c in chips:
         label = f"{val} {lab}"
         cw = len(label) * 7.2 + 26
-        s.append(rect(cx + 4, 82 + 4, cw, 24, fill="ink", rx=3, p=p))
-        s.append(rect(cx, 82, cw, 24, fill="card", rx=3, stroke="ink", sw=2, p=p))
-        s.append(text(cx + 13, 98, val, size=12, fill=c, weight=800, font=MONO, p=p))
+        s.append(rect(cx, 82, cw, 24, fill=c, rx=12, opacity=0.15, p=p))
+        s.append(rect(cx, 82, cw, 24, fill="card", rx=12, p=p))
+        s.append(text(cx + 13, 98, val, size=12, fill=c, weight=700, font=SANS, p=p))
         s.append(text(cx + 13 + len(val) * 8 + 6, 98, lab, size=10, fill="muted",
-                      weight=700, font=MONO, p=p))
+                      weight=600, font=SANS, p=p))
         cx += cw + 12
     # activity matrix: rows = repos (busiest first), cols = days
     gx, gy = 176, 124
@@ -902,39 +896,39 @@ def pulse(p, d):
         name = f["name"]
         y = gy + r * rh
         lc = facts.LANG_COLORS.get(f["lang"], p["muted"])
-        s.append(circle(30, y + rh / 2 - 1, 3.6, fill=lc, stroke="ink", sw=1.2, p=p))
-        s.append(text(40, y + rh / 2 + 3, name, size=10.5, fill="ink", weight=700,
-                      font=MONO, p=p))
+        s.append(circle(30, y + rh / 2 - 1, 3.6, fill=lc, p=p))
+        s.append(text(40, y + rh / 2 + 3, name, size=11, fill="ink", weight=600,
+                      font=SANS, p=p))
         for i, col in enumerate(cols):
             cnt = mat[name].get(col, 0)
             x = gx + i * cw
             if cnt == 0:
                 empty_cells.append(f'<rect x="{x:.1f}" y="{y+1:.1f}" width="{cw-gap:.1f}" '
-                                   f'height="{rh-4}" rx="1"/>')
+                                   f'height="{rh-4}" rx="2"/>')
             else:
                 op = round(0.32 + 0.68 * (cnt / maxcell), 2)
                 fillc = "sig" if cnt == maxcell else "orange"
                 filled_cells.append(f'<rect x="{x:.1f}" y="{y+1:.1f}" width="{cw-gap:.1f}" '
-                                    f'height="{rh-4}" rx="1" fill="{p[fillc]}" fill-opacity="{op}"/>')
+                                    f'height="{rh-4}" rx="2" fill="{p[fillc]}" fill-opacity="{op}"/>')
         s.append(text(W - 26, y + rh / 2 + 3, str(totals[name]), size=10.5,
-                      fill="ink" if totals[name] else "faint", weight=800, font=MONO,
+                      fill="ink" if totals[name] else "faint", weight=700, font=SANS,
                       anchor="end", p=p))
-    s.append(f'<g fill="none" stroke="{p["grid"]}" stroke-width="1">' + "".join(empty_cells) + '</g>')
-    s.append(f'<g stroke="{p["ink"]}" stroke-width="1">' + "".join(filled_cells) + '</g>')
+    s.append(f'<g fill="none" stroke="{p["grid"]}" stroke-width="0.5">' + "".join(empty_cells) + '</g>')
+    s.append(f'<g>' + "".join(filled_cells) + '</g>')
     # date axis + legend
     ay = gy + len(rows) * rh + 12
     for i, col in enumerate(cols):
         if i == 0 or i == ndays - 1 or col.day == 1:
             s.append(text(gx + i * cw + (cw - gap) / 2, ay, col.strftime("%m/%d"), size=8.5,
-                          fill="faint", weight=700, font=MONO, anchor="middle", p=p))
-    s.append(text(gx, ay + 20, "less", size=9.5, fill="faint", weight=700, font=MONO, p=p))
+                          fill="faint", weight=600, font=SANS, anchor="middle", p=p))
+    s.append(text(gx, ay + 20, "less", size=9.5, fill="faint", weight=600, font=SANS, p=p))
     for k in range(5):
         s.append(rect(gx + 34 + k * 16, ay + 12, 12, 10, fill="orange",
-                      opacity=round(0.32 + 0.68 * (k / 4), 2), rx=1, stroke="ink", sw=1, p=p))
+                      opacity=round(0.32 + 0.68 * (k / 4), 2), rx=2, p=p))
     s.append(text(gx + 34 + 5 * 16 + 4, ay + 20, "more", size=9.5, fill="faint",
-                  weight=700, font=MONO, p=p))
-    s.append(text(W - 26, ay + 20, "commits →", size=9.5, fill="faint", weight=700,
-                  font=MONO, anchor="end", p=p))
+                  weight=600, font=SANS, p=p))
+    s.append(text(W - 26, ay + 20, "commits →", size=9.5, fill="faint", weight=600,
+                  font=SANS, anchor="end", p=p))
     s.append("</svg>")
     return "".join(s)
 
@@ -977,11 +971,11 @@ def timeline(p, d):
         if i > 0:
             s.append(line(bx0, by0, bx0, by1, stroke="grid", sw=1.5, p=p, dash="3 4"))
         cxb = (bx0 + bx1) / 2
-        s.append(text(cxb, by0 + 13, era["key"], size=13, fill=era["accent"], weight=800,
-                      font=MONO, anchor="middle", p=p))
-        s.append(text(cxb, by0 + 25, era["label"], size=9, fill="muted", weight=800,
-                      font=MONO, anchor="middle", spacing=0.3, p=p))
-    s.append(line(ax0, ay, ax1, ay, stroke="ink", sw=3, p=p))
+        s.append(text(cxb, by0 + 13, era["key"], size=13, fill=era["accent"], weight=700,
+                      font=SANS, anchor="middle", p=p))
+        s.append(text(cxb, by0 + 25, era["label"], size=9, fill="muted", weight=700,
+                      font=SANS, anchor="middle", spacing=0.3, p=p))
+    s.append(line(ax0, ay, ax1, ay, stroke="grid", sw=1.5, p=p))
 
     # greedy multi-row packing: place each milestone on the lowest row whose last
     # entry is >= MINGAP away in x, so labels never share a row too close.
@@ -1006,22 +1000,24 @@ def timeline(p, d):
     dn = {0: ay + 24, 1: ay + 56, 2: ay + 88}
     for m, x, r in lay("up", 3):
         my = up[r]
-        s.append(line(x, ay, x, my, stroke=m["accent"], sw=2, p=p))
-        s.append(circle(x, my, 5, fill=m["accent"], stroke="ink", sw=2, p=p))
-        s.append(text(x, my - 20, m["label"], size=10.5, fill="ink", weight=800, font=MONO,
+        s.append(line(x, ay, x, my + 5, stroke=m["accent"], sw=1, dash="2 2", p=p))
+        s.append(circle(x, my, 4, fill="card", stroke=m["accent"], sw=2, p=p))
+        s.append(circle(x, my, 8, fill=m["accent"], opacity=0.15, p=p))
+        s.append(text(x, my - 20, m["label"], size=10.5, fill="ink", weight=700, font=SANS,
                       anchor="middle", p=p))
-        s.append(text(x, my - 9, m["sub"], size=8.5, fill="muted", weight=600, font=MONO,
+        s.append(text(x, my - 9, m["sub"], size=8.5, fill="muted", weight=600, font=SANS,
                       anchor="middle", p=p))
     for m, x, r in lay("down", 3):
         my = dn[r]
-        s.append(line(x, ay, x, my, stroke=m["accent"], sw=2, p=p))
-        s.append(circle(x, my, 5, fill=m["accent"], stroke="ink", sw=2, p=p))
-        s.append(text(x, my + 15, m["label"], size=10.5, fill="ink", weight=800, font=MONO,
+        s.append(line(x, ay, x, my - 5, stroke=m["accent"], sw=1, dash="2 2", p=p))
+        s.append(circle(x, my, 4, fill="card", stroke=m["accent"], sw=2, p=p))
+        s.append(circle(x, my, 8, fill=m["accent"], opacity=0.15, p=p))
+        s.append(text(x, my + 15, m["label"], size=10.5, fill="ink", weight=700, font=SANS,
                       anchor="middle", p=p))
-        s.append(text(x, my + 26, m["sub"], size=8.5, fill="muted", weight=600, font=MONO,
+        s.append(text(x, my + 26, m["sub"], size=8.5, fill="muted", weight=600, font=SANS,
                       anchor="middle", p=p))
     s.append(text(ax0, H - 7, "▲ above = repos & ships       ▼ below = research & career",
-                  size=9, fill="faint", weight=700, font=MONO, p=p))
+                  size=9, fill="faint", weight=600, font=SANS, p=p))
     s.append("</svg>")
     return "".join(s)
 
@@ -1048,11 +1044,9 @@ def _arrow(x1, y1, x2, y2, p, c="ink", sw=3):
 
 
 def _node(s, p, x, y, w, h, title, sub, accent, dx=5):
-    s.append(card(x, y, w, h, p, fill="card", dx=dx, dy=dx))
-    s.append(rect(x, y, w, 5, fill=accent, rx=0, p=p))
-    s.append(line(x, y + 5, x + w, y + 5, stroke="ink", sw=2, p=p))
-    s.append(text(x + 11, y + 24, title, size=12.5, fill="ink", weight=800, font=MONO, p=p))
-    s.append(text(x + 11, y + 39, sub, size=9.5, fill="muted", weight=600, font=MONO, p=p))
+    s.append(card(x, y, w, h, p, fill="card", accent=accent, dx=dx, dy=dx))
+    s.append(text(x + 16, y + 22, title, size=12.5, fill="ink", weight=700, font=SANS, p=p))
+    s.append(text(x + 16, y + 37, sub, size=9.5, fill="muted", weight=600, font=SANS, p=p))
 
 
 def stack(p, d):
@@ -1069,11 +1063,10 @@ def stack(p, d):
     # AGENT source
     ax, ay, aw, ah = 28, 108, 92, 62
     s.append(card(ax, ay, aw, ah, p, fill="card", accent="red", dx=5))
-    s.append(rect(ax, ay, aw, 5, fill="red", rx=0, p=p))
-    s.append(text(ax + aw / 2, ay + 30, "AGENT", size=13, fill="ink", weight=800,
-                  font=MONO, anchor="middle", p=p))
-    s.append(text(ax + aw / 2, ay + 46, "LLM + tools", size=9, fill="muted", weight=600,
-                  font=MONO, anchor="middle", p=p))
+    s.append(text(ax + aw / 2, ay + 28, "AGENT", size=13, fill="ink", weight=800,
+                  font=SANS, anchor="middle", p=p))
+    s.append(text(ax + aw / 2, ay + 44, "LLM + tools", size=9, fill="muted", weight=600,
+                  font=SANS, anchor="middle", p=p))
     # LLM lane (upper)
     _node(s, p, 210, 96, 168, 50, "modelgate", "route · fallback · cost", "blue")
     s.append(text(388 + 22, 116, "LLM", size=11, fill="muted", weight=800, font=MONO, p=p))
@@ -1093,9 +1086,9 @@ def stack(p, d):
     s.append(_arrow(530, 183, 542, 183, p, c="red"))                # toolcage -> tool
     # --- observers rail ---
     oy = 236
-    s.append(line(24, oy - 12, W - 24, oy - 12, stroke="grid", sw=2, p=p))
-    s.append(text(30, oy + 2, "OBSERVED & VERIFIED BY", size=9.5, fill="faint", weight=800,
-                  font=MONO, spacing=1, p=p))
+    s.append(line(24, oy - 12, W - 24, oy - 12, stroke="grid", sw=1.5, p=p))
+    s.append(text(30, oy + 2, "OBSERVED & VERIFIED BY", size=9.5, fill="faint", weight=700,
+                  font=SANS, spacing=1, p=p))
     obs = [
         ("agent-rules-audit", "lints the agent's rule files", "red"),
         ("mcp-sentinel", "grades the MCP config A–F", "red"),
@@ -1107,18 +1100,15 @@ def stack(p, d):
     for i, (nm, role, acc) in enumerate(obs):
         x = ox + i * (ow + 12)
         s.append(card(x, oy + 14, ow, 50, p, fill="card", accent=acc, dx=4))
-        s.append(text(x + 14, oy + 34, nm, size=11, fill="ink", weight=800, font=MONO, p=p))
-        _wrap(s, p, role, x + 14, oy + 50, ow - 22, size=9, fill="muted", lh=11, maxlines=2)
+        s.append(text(x + 14, oy + 32, nm, size=11, fill="ink", weight=700, font=SANS, p=p))
+        _wrap(s, p, role, x + 14, oy + 46, ow - 22, size=9, fill="muted", lh=11, maxlines=2)
     # --- PQC foundation ---
     fy = 322
-    s.append(rect(24 + 5, fy + 5, W - 48, 40, fill="ink", rx=3, p=p))
-    s.append(rect(24, fy, W - 48, 40, fill="card", rx=3, stroke="ink", sw=2.5, p=p))
-    s.append(rect(24, fy, 7, 40, fill="purple", rx=0, p=p))
-    s.append(line(31, fy, 31, fy + 40, stroke="ink", sw=2.5, p=p))
-    s.append(text(44, fy + 18, "POST-QUANTUM FOUNDATION", size=11, fill="ink", weight=800,
-                  font=MONO, spacing=0.5, p=p))
-    s.append(text(44, fy + 33, "ml-kem-rb · pqc-scan — the crypto layer this whole stack has to migrate to",
-                  size=9.5, fill="muted", weight=600, font=MONO, p=p))
+    s.append(card(24, fy, W - 48, 40, p, fill="card", accent="purple", dx=3))
+    s.append(text(44, fy + 17, "POST-QUANTUM FOUNDATION", size=11, fill="ink", weight=800,
+                  font=SANS, spacing=0.5, p=p))
+    s.append(text(44, fy + 31, "ml-kem-rb · pqc-scan — the crypto layer this whole stack has to migrate to",
+                  size=9.5, fill="muted", weight=600, font=SANS, p=p))
     s.append(text(W - 34, fy + 26, "FIPS 203", size=11, fill="purple", weight=800,
                   font=MONO, anchor="end", p=p))
     s.append("</svg>")
@@ -1185,10 +1175,11 @@ def constellation(p, d):
     s.append(edge("ml-kem-rb", "pqc-scan", p["purple"], "ML-KEM"))
     s.append(edge("modelgate", "mcp-gateway-lite", p["blue"], "mirrors", dash="4 3"))
     # hub
-    s.append(circle(hx, hy, 21, fill="card", stroke="ink", sw=2.5, p=p))
-    s.append(text(hx, hy - 1, "MCP", size=12, fill="ink", weight=800, font=MONO,
+    s.append(circle(hx, hy, 23, fill="card", stroke="sig", sw=1.5, p=p))
+    s.append(circle(hx, hy, 23, fill="sig", opacity=0.1, p=p))
+    s.append(text(hx, hy - 1, "MCP", size=12, fill="ink", weight=800, font=SANS,
                   anchor="middle", p=p))
-    s.append(text(hx, hy + 12, "hub", size=8, fill="muted", weight=700, font=MONO,
+    s.append(text(hx, hy + 12, "hub", size=8.5, fill="muted", weight=700, font=SANS,
                   anchor="middle", p=p))
     # nodes
     for f in facts.FLAGSHIPS:
@@ -1196,17 +1187,16 @@ def constellation(p, d):
         x, y = NET_POS[nm]
         c = DOMAIN_ACCENT[f["domain"]]
         r = rad(nm)
-        s.append(circle(x + 3, y + 3, r, fill="ink", p=p))       # hard shadow
-        s.append(circle(x, y, r, fill=c, stroke="ink", sw=2.5, p=p))
+        s.append(circle(x, y, r, fill="card", p=p))
+        s.append(circle(x, y, r, fill=c, opacity=0.9, p=p))
         if f.get("tag"):
             s.append(text(x, y + 4, f["tag"].replace("v", ""), size=8.5, fill="on_accent",
-                          weight=800, font=MONO, anchor="middle", p=p))
+                          weight=800, font=SANS, anchor="middle", p=p))
         short = nm.replace("agent-", "a-").replace("mcp-", "").replace("-audit", "")
         lblw = len(nm) * 6.0 + 10
         ly2 = y + r + 13
-        s.append(rect(x - lblw / 2 + 2, ly2 - 11 + 2, lblw, 15, fill="ink", rx=2, p=p))
-        s.append(rect(x - lblw / 2, ly2 - 11, lblw, 15, fill="card", rx=2, stroke="ink", sw=1.3, p=p))
-        s.append(text(x, ly2, nm, size=8.5, fill="ink", weight=700, font=MONO,
+        s.append(rect(x - lblw / 2, ly2 - 11, lblw, 15, fill="card", rx=4, p=p))
+        s.append(text(x, ly2, nm, size=8.5, fill="ink", weight=700, font=SANS,
                       anchor="middle", p=p))
     s.append("</svg>")
     return "".join(s)
@@ -1224,7 +1214,7 @@ def research(p, d):
                   "peer-reviewed output + shipped-work numbers — what a repo list alone doesn't show",
                   "pink"))
     # publications
-    s.append(text(24, 86, "PEER-REVIEWED", size=10, fill="faint", weight=800, font=MONO,
+    s.append(text(24, 86, "PEER-REVIEWED", size=10, fill="faint", weight=700, font=SANS,
                   spacing=1, p=p))
     accents = ["pink", "purple", "cyan"]
     counts = facts.PUBLICATIONS["counts"]
@@ -1234,27 +1224,27 @@ def research(p, d):
         x = x0 + i * (tw + gap)
         off = 28 + len(num) * 17
         s.append(card(x, y0, tw, 50, p, fill="card", accent=accents[i], dx=5, dy=5))
-        s.append(text(x + 18, y0 + 34, num, size=30, fill="ink", weight=800, font=MONO, p=p))
-        s.append(text(x + off, y0 + 22, lab, size=12, fill="ink", weight=800, font=MONO, p=p))
-        s.append(text(x + off, y0 + 37, sub, size=9.5, fill="muted", weight=600, font=MONO, p=p))
+        s.append(text(x + 18, y0 + 34, num, size=30, fill="ink", weight=800, font=SANS, p=p))
+        s.append(text(x + off, y0 + 22, lab, size=12, fill="ink", weight=800, font=SANS, p=p))
+        s.append(text(x + off, y0 + 37, sub, size=9.5, fill="muted", weight=600, font=SANS, p=p))
     # venues
     vy = 168
     for i, v in enumerate(facts.PUBLICATIONS["venues"]):
         yy = vy + i * 14
-        s.append(text(26, yy, "›", size=10, fill="pink", weight=800, font=MONO, p=p))
-        s.append(text(38, yy, v, size=10, fill="muted", weight=600, font=MONO, p=p))
+        s.append(text(26, yy, "›", size=10, fill="pink", weight=800, font=SANS, p=p))
+        s.append(text(38, yy, v, size=10, fill="muted", weight=600, font=SANS, p=p))
     # divider
     s.append(line(24, 232, W - 24, 232, stroke="grid", sw=1.5, p=p))
     # shipped impact
-    s.append(text(24, 250, "SHIPPED IMPACT", size=10, fill="faint", weight=800, font=MONO,
+    s.append(text(24, 250, "SHIPPED IMPACT", size=10, fill="faint", weight=700, font=SANS,
                   spacing=1, p=p))
     iy, iacc = 258, ["green", "blue", "purple", "orange"]
     iw = (W - 48 - 3 * gap) / 4
     for i, (val, lab, det) in enumerate(facts.IMPACT):
         x = 24 + i * (iw + gap)
         s.append(card(x, iy, iw, 48, p, fill="card", accent=iacc[i], dx=4, dy=4))
-        s.append(text(x + 14, iy + 21, val, size=15, fill="ink", weight=800, font=MONO, p=p))
-        s.append(text(x + 14, iy + 34, lab, size=9.5, fill="muted", weight=700, font=MONO, p=p))
+        s.append(text(x + 14, iy + 21, val, size=15, fill="ink", weight=800, font=SANS, p=p))
+        s.append(text(x + 14, iy + 34, lab, size=9.5, fill="muted", weight=700, font=SANS, p=p))
     s.append("</svg>")
     return "".join(s)
 
