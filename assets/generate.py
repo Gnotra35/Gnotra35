@@ -723,19 +723,20 @@ def boot(p, d):
                   "cyan"))
 
     s = [frame(W, H, p, idn, texture=False)]
-    s.append(rect(16 + 6, 12 + 6, W - 32, H - 24, fill="ink", rx=4, p=p))
-    s.append(rect(16, 12, W - 32, H - 24, fill="card", rx=4, stroke="ink", sw=3, p=p))
-    s.append(rect(16, 12, W - 32, H - 24, fill=f"url(#dg{idn})", rx=4, p=p))
-    # no corner registration marks: the window-chrome instruments (00 boot,
-    # 01 hero) share a plain windowed frame; the dashboard panels (02-10) carry
-    # the marks. Keeps the two families visually distinct and internally consistent.
-    # chrome
-    s.append(rect(16, 12, W - 32, 38, fill="ink", rx=0, p=p))
-    for i in range(3):
-        s.append(rect(34 + i * 22, 24, 13, 13, fill=["sig", "yellow", "green"][i], rx=2,
-                      stroke="ink", sw=1.5, p=p))
-    s.append(text(W - 32, 36, "00 // abhi5heksah@portfolio:~", size=12.5,
-                  fill="page", weight=800, font=MONO, anchor="end", spacing=0.3, p=p))
+    # modern terminal card
+    sig = p["sig"]
+    s.append(f'<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="0">'
+             f'<stop offset="0" stop-color="{sig}" stop-opacity="0.12"/>'
+             f'<stop offset="1" stop-color="{p["blue"]}" stop-opacity="0.06"/></linearGradient></defs>')
+    s.append(rect(16, 12, W - 32, H - 24, fill="card", rx=16, p=p))
+    s.append(rect(16, 12, W - 32, H - 24, fill="url(#bg)", rx=16, p=p))
+    # terminal title bar
+    s.append(rect(16, 12, W - 32, 38, fill="faint", rx=16, opacity=0.5, p=p))
+    # traffic light dots
+    for i, c in enumerate(["red", "yellow", "green"]):
+        s.append(circle(42 + i * 20, 31, 5.5, fill=c, p=p))
+    s.append(text(W - 32, 36, f"payal-35@portfolio:~", size=12,
+                  fill="muted", weight=600, font=MONO, anchor="end", spacing=0.3, p=p))
     tagcol = {"ok": "green", "warn": "orange", "run": "blue"}
     n = len(lines)
     ly = 78
@@ -771,7 +772,7 @@ def boot(p, d):
              f'</rect></g>')
     # prompt
     py = ly + n * lh + 4
-    s.append(text(30, py, f"abhi5heksah@portfolio:~$", size=13.5, fill="green", weight=800,
+    s.append(text(30, py, f"payal-35@portfolio:~$", size=13.5, fill="green", weight=800,
                   font=MONO, p=p))
     s.append(f'<rect x="{30 + 22 * 8.15:.1f}" y="{py-12:.1f}" width="11" height="15" '
              f'fill="{p["sig"]}"><animate attributeName="opacity" values="1;1;0;0" '
